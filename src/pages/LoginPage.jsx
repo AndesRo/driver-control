@@ -23,7 +23,7 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#1a1a1a]">
       <div className="card w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-primary mb-6">Driver Jumbo</h1>
+        <h1 className="text-2xl font-bold text-center text-primary mb-6">Driver Control</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
