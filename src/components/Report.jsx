@@ -28,8 +28,9 @@ const Report = () => {
     fetchOrders();
   }, [startDate, endDate, user]);
 
-  const iva = totalBruto * 0.19;
-  const neto = totalBruto / 1.19;
+  // Cálculos con retención del 15.25%
+  const retencion = totalBruto * 0.1525;
+  const neto = totalBruto - retencion; // o totalBruto * 0.8475
 
   const exportExcel = () => {
     const data = orders.map(o => ({
@@ -50,8 +51,8 @@ const Report = () => {
     const doc = new jsPDF();
     doc.text('Reporte de entregas', 14, 16);
     doc.text(`Total bruto: $${totalBruto}`, 14, 26);
-    doc.text(`IVA (19%): $${iva.toFixed(0)}`, 14, 32);
-    doc.text(`Neto: $${neto.toFixed(0)}`, 14, 38);
+    doc.text(`Retención (15.25%): $${retencion.toFixed(0)}`, 14, 32);
+    doc.text(`Neto (después de retención): $${neto.toFixed(0)}`, 14, 38);
 
     const tableData = orders.map(o => [o.order_number, o.comuna, o.ruta, o.fecha, o.estado, `$${o.monto_bruto}`]);
     doc.autoTable({
@@ -75,8 +76,8 @@ const Report = () => {
       <div className="card space-y-2">
         <div className="flex justify-between"><span>Total órdenes</span><span>{orders.length}</span></div>
         <div className="flex justify-between"><span>Monto bruto total</span><span>${totalBruto}</span></div>
-        <div className="flex justify-between"><span>IVA (19%)</span><span>${iva.toFixed(0)}</span></div>
-        <div className="flex justify-between font-bold text-lg text-primary"><span>Neto (sin IVA)</span><span>${neto.toFixed(0)}</span></div>
+        <div className="flex justify-between"><span>Retención (15.25%)</span><span>${retencion.toFixed(0)}</span></div>
+        <div className="flex justify-between font-bold text-lg text-primary"><span>Neto (después de retención)</span><span>${neto.toFixed(0)}</span></div>
       </div>
 
       <div className="flex gap-2 mt-4">
