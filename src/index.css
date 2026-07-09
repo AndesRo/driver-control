@@ -3,14 +3,36 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
   body {
     @apply bg-[#1a1a1a] text-[#f0f0f0];
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+  /* Ajustes para inputs en móviles */
   input, select, textarea {
-    @apply bg-[#2d2d2d] text-[#f0f0f0] border border-[#444] rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#ff8c00];
+    @apply bg-[#2d2d2d] text-[#f0f0f0] border border-[#444] rounded-lg px-3 py-2 w-full;
+    font-size: 16px; /* Evita zoom en iOS */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    @apply outline-none ring-2 ring-[#ff8c00];
   }
   button {
     @apply transition-all duration-200;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   .btn-primary {
     @apply bg-[#ff8c00] hover:bg-[#e67e00] text-white font-bold py-2 px-4 rounded-lg;
@@ -20,5 +42,46 @@
   }
   .card {
     @apply bg-[#2d2d2d] rounded-xl p-4 shadow-lg;
+    width: 100%;
+    max-width: 100%;
+  }
+  /* Contenedor principal de la app */
+  .app-container {
+    @apply max-w-md mx-auto pb-20 min-h-screen bg-[#1a1a1a];
+    width: 100%;
+  }
+  /* Ajustes para la barra de navegación */
+  .navbar {
+    @apply fixed bottom-0 left-0 right-0 bg-[#2d2d2d] border-t border-[#444] flex justify-around items-center py-2 px-2;
+    z-index: 50;
+  }
+  .navbar a, .navbar button {
+    @apply flex flex-col items-center text-xs;
+    min-width: 60px;
+  }
+  .navbar .icon {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  .navbar .label {
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
+  /* Ajustes para listas y tablas responsivas */
+  .order-item {
+    @apply flex flex-wrap justify-between items-start gap-2;
+    word-break: break-word;
+  }
+  /* Evitar desbordes en tablas de reporte */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Ajustes para los filtros de fecha */
+  .filter-container {
+    @apply flex flex-wrap items-center gap-2;
+  }
+  .filter-container input[type="date"] {
+    @apply flex-1 min-w-[120px];
   }
 }

@@ -17,7 +17,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/*" element={
             <ProtectedRoute>
-              <div className="max-w-md mx-auto pb-20 bg-[#1a1a1a] min-h-screen">
+              <div className="app-container">
                 <Routes>
                   <Route path="/" element={<OrderForm />} />
                   <Route path="/ordenes" element={<OrderList />} />
