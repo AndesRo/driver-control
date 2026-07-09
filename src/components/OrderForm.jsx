@@ -51,7 +51,7 @@ const OrderForm = ({ onOrderAdded }) => {
 
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-4">
-      <h2 className="text-2xl font-bold text-primary">Nueva orden</h2>
+      <h2 className="text-2xl font-bold text-primary">Nueva orden de entrega</h2>
       <input
         type="text" name="order_number" placeholder="N° orden" required
         value={form.order_number} onChange={handleChange}

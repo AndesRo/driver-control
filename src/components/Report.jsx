@@ -84,7 +84,7 @@ const Report = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold text-primary mb-4">Reporte financiero</h2>
+      <h2 className="text-2xl font-bold text-primary mb-4">Reporte de entregas</h2>
       <div className="flex flex-wrap gap-2 mb-4">
         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-auto flex-1" />
         <span className="text-gray-400">a</span>
