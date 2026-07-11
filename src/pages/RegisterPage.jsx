@@ -21,10 +21,29 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between p-4 bg-[#1a1a1a]">
-      <div className="flex-1 flex items-center justify-center w-full">
-        <div className="card w-full max-w-md">
-          <h1 className="text-2xl font-bold text-center text-primary mb-6">Crear cuenta</h1>
+    <div
+      className="min-h-screen flex flex-col items-center justify-between p-4"
+      style={{
+        backgroundImage: `url('/images.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Overlay oscuro para legibilidad */}
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
+
+      {/* Contenido principal con z-index */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center w-full">
+        {/* Mensaje de bienvenida */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white drop-shadow-lg">Driver Control</h1>
+          <p className="text-lg text-gray-200 drop-shadow-md mt-2">Crea tu cuenta para empezar</p>
+        </div>
+
+        {/* Formulario de registro */}
+        <div className="card w-full max-w-md bg-[#2d2d2d]/90 backdrop-blur-sm">
+          <h2 className="text-2xl font-bold text-center text-primary mb-6">Registrarse</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="email"
@@ -32,6 +51,7 @@ const RegisterPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full input-lg"
             />
             <input
               type="password"
@@ -40,18 +60,21 @@ const RegisterPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
+              className="w-full input-lg"
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button type="submit" className="btn-primary w-full">Registrarse</button>
+            <button type="submit" className="btn-primary w-full py-3 text-lg">Registrarse</button>
           </form>
           <p className="text-center text-sm text-gray-400 mt-4">
             ¿Ya tienes cuenta? <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
           </p>
         </div>
       </div>
-      <footer className="mt-8 text-center text-gray-500 text-sm">
+
+      {/* Pie de página */}
+      <footer className="relative z-10 mt-8 text-center text-gray-300 text-sm drop-shadow-md">
         <p>Desarrollado por <span className="text-primary">AndesDev</span> © {new Date().getFullYear()}</p>
-        <p className="text-xs text-gray-600">App para conductores</p>
+        <p className="text-xs text-gray-400">App para conductores</p>
       </footer>
     </div>
   );
