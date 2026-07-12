@@ -8,10 +8,14 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Obtener sesión actual
-    const session = supabase.auth.getSession();
-    setUser(session?.user ?? null);
-    setLoading(false);
+    // Obtener sesión actual de forma asíncrona
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      setLoading(false);
+    };
+
+    fetchSession();
 
     // Escuchar cambios en autenticación
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -19,7 +23,10 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return () => listener?.subscription?.unsubscribe();
+    // Cleanup
+    return () => {
+      listener?.subscription?.unsubscribe();
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -29,7 +36,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    // Opciones para redirigir después de confirmar correo
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin + '/login', // Redirige al login después de confirmar
+      },
+    });
     if (error) throw error;
     return data;
   };
