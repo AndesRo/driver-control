@@ -7,6 +7,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -24,67 +25,123 @@ const RegisterPage = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-between p-4"
       style={{
-        backgroundImage: `url('/delivery-person.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        background: 'linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%)',
       }}
     >
-      <div className="absolute inset-0 bg-black/60 z-0"></div>
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center w-full">
+      {/* Contenido principal */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full">
+        {/* Mensaje de bienvenida */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white drop-shadow-lg">Driver Control</h1>
-          <p className="text-lg text-gray-200 drop-shadow-md mt-2">Crea tu cuenta y comienza a gestionar tus entregas</p>
+          <h1 className="text-5xl font-bold text-white drop-shadow-lg tracking-tight">
+            Driver<span className="text-orange-500">Control</span>
+          </h1>
+          <p className="text-lg text-gray-400 drop-shadow-md mt-2 font-light">
+            Crea tu cuenta y comienza a gestionar tus entregas
+          </p>
         </div>
 
-        <div className="card w-full max-w-md bg-[#2d2d2d]/90 backdrop-blur-sm">
-          <h2 className="text-2xl font-bold text-center text-primary mb-6">Registrarse</h2>
+        {/* Formulario de registro */}
+        <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-8">
+          <h2 className="text-2xl font-semibold text-center text-white mb-6">
+            Registrarse
+          </h2>
           {success ? (
             <div className="text-center space-y-4">
-              <div className="text-green-500 text-xl">✅</div>
-              <p className="text-white">¡Registro exitoso!</p>
+              <div className="text-green-500 text-4xl">✓</div>
+              <p className="text-white text-lg font-medium">¡Registro exitoso!</p>
               <p className="text-gray-300 text-sm">
-                Hemos enviado un correo de confirmación a <strong>{email}</strong>.
+                Hemos enviado un correo de confirmación a <strong className="text-orange-400">{email}</strong>.
                 <br />Revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta.
               </p>
-              <Link to="/login" className="btn-primary inline-block w-full text-center">Ir a iniciar sesión</Link>
+              <Link
+                to="/login"
+                className="inline-block w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-center"
+              >
+                Ir a iniciar sesión
+              </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="email"
-                placeholder="Correo electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full input-lg"
-              />
-              <input
-                type="password"
-                placeholder="Contraseña (mínimo 6 caracteres)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full input-lg"
-              />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <button type="submit" className="btn-primary w-full py-3 text-lg">Registrarse</button>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                  Correo electrónico
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="ejemplo@empresa.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                  Contraseña (mínimo 6 caracteres)
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition pr-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none"
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              <button
+                type="submit"
+                className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              >
+                Registrarse
+              </button>
             </form>
           )}
-          <p className="text-center text-sm text-gray-400 mt-4">
-            ¿Ya tienes cuenta? <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
+          <p className="text-center text-sm text-gray-400 mt-6">
+            ¿Ya tienes cuenta?{' '}
+            <Link to="/login" className="text-orange-400 hover:text-orange-300 hover:underline transition">
+              Inicia sesión
+            </Link>
           </p>
         </div>
       </div>
 
-      <footer className="relative z-10 mt-8 text-center text-gray-300 text-sm drop-shadow-md">
-        <p>Desarrollado por <span className="text-primary">AndesDev</span> © {new Date().getFullYear()}</p>
-        <p className="text-xs text-gray-400">App para conductores</p>
+      {/* Pie de página */}
+      <footer className="mt-8 text-center text-gray-500 text-sm">
+        <p>
+          Desarrollado por <span className="text-orange-400 font-medium">AndesDev</span> © {new Date().getFullYear()}
+        </p>
+        <p className="text-xs text-gray-600">App para conductores</p>
       </footer>
     </div>
   );
