@@ -12,16 +12,20 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <NavLink to="/" className={({ isActive }) => isActive ? 'text-primary' : 'text-gray-400'}>
+      <NavLink to="/" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
         <span className="icon">➕</span>
         <span className="label">Registrar</span>
       </NavLink>
-      <NavLink to="/ordenes" className={({ isActive }) => isActive ? 'text-primary' : 'text-gray-400'}>
+      <NavLink to="/ordenes" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
         <span className="icon">📋</span>
         <span className="label">Órdenes</span>
       </NavLink>
-      <NavLink to="/reporte" className={({ isActive }) => isActive ? 'text-primary' : 'text-gray-400'}>
+      <NavLink to="/extras" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
         <span className="icon">💰</span>
+        <span className="label">Extras</span>
+      </NavLink>
+      <NavLink to="/reporte" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
+        <span className="icon">📊</span>
         <span className="label">Reporte</span>
       </NavLink>
       <button onClick={handleLogout} className="text-gray-400 hover:text-red-500">

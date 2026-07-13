@@ -8,14 +8,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Obtener sesión actual de forma asíncrona
-    const fetchSession = async () => {
+    // Obtener sesión actual (async/await)
+    const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       setLoading(false);
     };
-
-    fetchSession();
+    getSession();
 
     // Escuchar cambios en autenticación
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -23,10 +22,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    // Cleanup
-    return () => {
-      listener?.subscription?.unsubscribe();
-    };
+    return () => listener?.subscription?.unsubscribe();
   }, []);
 
   const login = async (email, password) => {
