@@ -1,34 +1,27 @@
-import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const SubscriptionBlocked = () => {
-  // Número de WhatsApp del administrador (formato internacional sin +)
-  const whatsappNumber = '56997416485'; // CAMBIA ESTE NÚMERO POR EL TUYO
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hola,%20mi%20suscripción%20a%20Driver%20Control%20ha%20vencido.%20Quiero%20renovar.%20¿Cómo%20puedo%20hacer%20la%20transferencia?`;
+  const { logout } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#1a1a1a]">
-      <div className="card max-w-md w-full text-center space-y-6">
-        <div className="text-6xl mb-4">🔒</div>
-        <h1 className="text-2xl font-bold text-primary">Suscripción vencida</h1>
-        <p className="text-gray-300">
-          Tu suscripción ha expirado. Para seguir utilizando la aplicación, por favor renueva tu plan.
+      <div className="card w-full max-w-md text-center">
+        <div className="text-6xl mb-4">⛔</div>
+        <h2 className="text-2xl font-bold text-red-500 mb-2">Suscripción vencida</h2>
+        <p className="text-gray-300 mb-4">
+          Tu suscripción ha vencido. Renueva para seguir utilizando la aplicación.
         </p>
-        <div className="bg-[#3d3d3d] p-4 rounded-lg">
-          <p className="text-sm text-gray-400">
-            Realiza una transferencia a la cuenta indicada y luego contáctanos por WhatsApp para activar tu acceso.
-          </p>
+        <p className="text-sm text-gray-400 mb-6">
+          Para renovar, realiza una transferencia a la cuenta indicada y luego contacta al administrador.
+        </p>
+        <div className="bg-[#2d2d2d] p-3 rounded-lg mb-4 text-left">
+          <p className="text-sm text-gray-400">Datos para transferencia:</p>
+          <p className="font-mono text-primary">Banco: XYZ</p>
+          <p className="font-mono text-primary">Cuenta: 123456789</p>
+          <p className="font-mono text-primary">RUT: 12.345.678-9</p>
+          <p className="font-mono text-primary">Email: admin@ejemplo.com</p>
         </div>
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary w-full flex items-center justify-center gap-2 text-lg py-3"
-        >
-          <span>📱</span> Contactar por WhatsApp
-        </a>
-        <p className="text-xs text-gray-500 mt-4">
-          Al hacer clic, se abrirá WhatsApp con un mensaje predefinido.
-        </p>
+        <button onClick={logout} className="btn-secondary w-full">Cerrar sesión</button>
       </div>
     </div>
   );
