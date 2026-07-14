@@ -56,11 +56,12 @@ const RegisterPage = () => {
           {success ? (
             <div className="text-center space-y-4">
               <div className="text-green-500 text-4xl">✓</div>
-              <p className="text-white text-lg font-medium">¡Registro exitoso!</p>
+           <p className="text-white text-lg font-medium">¡Registro exitoso!</p>
               <p className="text-gray-300 text-sm">
                 Hemos enviado un correo de confirmación a <strong className="text-orange-400">{email}</strong>.
                 <br />Revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta.
               </p>
+              <p className="text-xs text-gray-400 mt-2">Al registrarte, obtendrás 7 días de prueba gratuita.</p>
               <Link
                 to="/login"
                 className="inline-block w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-center"
