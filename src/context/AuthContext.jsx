@@ -3,47 +3,72 @@ import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
 
+// Lista de emails de administradores (puedes agregar más)
+const ADMIN_EMAILS = ['andespat@yahoo.com']; // Cambia por tu correo
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [suscripcion, setSuscripcion] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const fetchSuscripcion = async (userId) => {
-    if (!userId) return null;
-    const { data, error } = await supabase
-      .from('suscripciones')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-    if (error) {
-      console.error('Error al obtener suscripción:', error);
-      return null;
-    }
-    return data;
-  };
+  const [suscripcion, setSuscripcion] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user ?? null;
-      setUser(user);
-      if (user) {
-        const sub = await fetchSuscripcion(user.id);
-        setSuscripcion(sub);
-      } else {
-        setSuscripcion(null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      if (currentUser) {
+        // Verificar si es admin
+        const admin = ADMIN_EMAILS.includes(currentUser.email);
+        setIsAdmin(admin);
+        
+        // Obtener suscripción solo si no es admin
+        if (!admin) {
+          const { data, error } = await supabase
+            .from('suscripciones')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+          if (!error) {
+            setSuscripcion(data);
+          } else {
+            setSuscripcion(null); // Sin suscripción registrada
+          }
+        } else {
+          // Los administradores no tienen suscripción (siempre activos)
+          setSuscripcion({ estado: 'activa' });
+        }
       }
       setLoading(false);
     };
+
     getSession();
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const user = session?.user ?? null;
-      setUser(user);
-      if (user) {
-        const sub = await fetchSuscripcion(user.id);
-        setSuscripcion(sub);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      if (currentUser) {
+        const admin = ADMIN_EMAILS.includes(currentUser.email);
+        setIsAdmin(admin);
+        
+        if (!admin) {
+          const { data, error } = await supabase
+            .from('suscripciones')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+          if (!error) {
+            setSuscripcion(data);
+          } else {
+            setSuscripcion(null);
+          }
+        } else {
+          setSuscripcion({ estado: 'activa' });
+        }
       } else {
+        setIsAdmin(false);
         setSuscripcion(null);
       }
       setLoading(false);
@@ -66,33 +91,31 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await supabase.auth.signOut();
-    setSuscripcion(null);
   };
 
-  // Verificar si la suscripción está activa
-  const isSubscriptionActive = () => {
+  // Determinar si la suscripción está activa (solo para no admins)
+  const hasActiveSubscription = () => {
+    if (isAdmin) return true;
     if (!suscripcion) return false;
     if (suscripcion.estado !== 'activa') return false;
-    const now = new Date();
-    const vencimiento = new Date(suscripcion.fecha_vencimiento);
-    return now <= vencimiento;
+    if (suscripcion.fecha_vencimiento) {
+      const hoy = new Date();
+      const venc = new Date(suscripcion.fecha_vencimiento);
+      if (venc < hoy) return false;
+    }
+    return true;
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      suscripcion, 
-      loading, 
-      login, 
-      register, 
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      login,
+      register,
       logout,
-      isSubscriptionActive,
-      refreshSuscripcion: async () => {
-        if (user) {
-          const sub = await fetchSuscripcion(user.id);
-          setSuscripcion(sub);
-        }
-      }
+      suscripcion,
+      isAdmin,
+      hasActiveSubscription: hasActiveSubscription()
     }}>
       {children}
     </AuthContext.Provider>
