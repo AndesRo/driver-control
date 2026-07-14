@@ -8,7 +8,7 @@ import OrderForm from './components/OrderForm';
 import OrderList from './components/OrderList';
 import Report from './components/Report';
 import Extras from './components/Extras';
-import SuscripcionVencida from './pages/SuscripcionVencida';
+
 
 function App() {
   return (
@@ -25,7 +25,6 @@ function App() {
                   <Route path="/ordenes" element={<OrderList />} />
                   <Route path="/extras" element={<Extras />} />
                   <Route path="/reporte" element={<Report />} />
-                  <Route path="/suscripcion-vencida" element={<SuscripcionVencida />} />
                 </Routes>
                 <Navbar />
               </div>
