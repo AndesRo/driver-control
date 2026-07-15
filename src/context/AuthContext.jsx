@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
-  // Carga la suscripción del usuario
   const loadSubscription = async (userId) => {
     if (!userId) {
       setSuscripcion(null);
@@ -28,28 +27,37 @@ export const AuthProvider = ({ children }) => {
         .maybeSingle();
 
       if (error) {
-        // Si la tabla no existe o hay error 500, lo manejamos
         console.error('Error al cargar suscripción:', error);
-        setSuscripcion(null);
-        setIsSubscriptionActive(false);
-        setSubscriptionLoading(false);
-        return;
-      }
-
-      // Si no hay datos, la creamos (por si no existe)
-      if (!data) {
+        // Si la tabla no existe o error, intentamos crear una suscripción por defecto
         const { data: newSub, error: insertError } = await supabase
           .from('suscripciones')
           .insert({ user_id: userId, estado: 'vencida' })
           .select()
           .single();
-
-        if (insertError) {
-          console.error('Error al crear suscripción:', insertError);
-          setSuscripcion(null);
+        if (!insertError) {
+          setSuscripcion(newSub);
           setIsSubscriptionActive(false);
         } else {
+          console.error('No se pudo crear suscripción:', insertError);
+          setSuscripcion(null);
+          setIsSubscriptionActive(false);
+        }
+        setSubscriptionLoading(false);
+        return;
+      }
+
+      if (!data) {
+        // No existe suscripción, la creamos
+        const { data: newSub, error: insertError } = await supabase
+          .from('suscripciones')
+          .insert({ user_id: userId, estado: 'vencida' })
+          .select()
+          .single();
+        if (!insertError) {
           setSuscripcion(newSub);
+          setIsSubscriptionActive(false);
+        } else {
+          setSuscripcion(null);
           setIsSubscriptionActive(false);
         }
         setSubscriptionLoading(false);
@@ -57,13 +65,15 @@ export const AuthProvider = ({ children }) => {
       }
 
       setSuscripcion(data);
-      // Verificar vigencia
+
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
       const vencimiento = data.fecha_vencimiento ? new Date(data.fecha_vencimiento) : null;
       if (vencimiento) {
         vencimiento.setHours(0, 0, 0, 0);
-        setIsSubscriptionActive(data.estado === 'activa' && vencimiento >= hoy);
+        const activa = data.estado === 'activa' && vencimiento >= hoy;
+        setIsSubscriptionActive(activa);
+        console.log(`Suscripción: ${activa ? 'ACTIVA' : 'VENCIDA'} (vencimiento: ${data.fecha_vencimiento})`);
       } else {
         setIsSubscriptionActive(false);
       }
@@ -76,7 +86,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Efecto para autenticación
   useEffect(() => {
     let mounted = true;
 
@@ -141,8 +150,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
-    // Crear suscripción después del registro (el trigger puede fallar, lo hacemos manual)
     if (data.user) {
+      // Crear suscripción por defecto
       const { error: subError } = await supabase
         .from('suscripciones')
         .insert({ user_id: data.user.id, estado: 'vencida' });
