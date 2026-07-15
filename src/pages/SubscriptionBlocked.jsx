@@ -28,11 +28,11 @@ const SubscriptionBlocked = () => {
     }
   };
 
-  const banco = import.meta.env.VITE_BANCO || 'Banco de Chile';
+  const banco = import.meta.env.VITE_BANCO || 'Banco Santander';
   const tipoCuenta = import.meta.env.VITE_TIPO_CUENTA || 'Cuenta Corriente';
   const numeroCuenta = import.meta.env.VITE_NUMERO_CUENTA || '123456789';
-  const titular = import.meta.env.VITE_TITULAR || 'Driver Control';
-  const correo = import.meta.env.VITE_CORREO || 'contacto@drivercontrol.cl';
+  const titular = import.meta.env.VITE_TITULAR || 'Andres Romero Millaquen';
+  const correo = import.meta.env.VITE_CORREO || 'andespart.ar@gmail.com';
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#1a1a1a] text-white">
