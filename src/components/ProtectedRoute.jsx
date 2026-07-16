@@ -1,11 +1,11 @@
-import { Navigate, useLocation } from 'react-router-dom'; // <-- Importa useLocation
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  const location = useLocation(); // <-- Obtiene la ruta actual
+  const location = useLocation();
   const [suscripcion, setSuscripcion] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -23,7 +23,6 @@ const ProtectedRoute = ({ children }) => {
         return;
       }
 
-      // ... (el resto de la lógica de verificación de admin y suscripción se mantiene igual)
       // 1. Verificar si es administrador
       const { data: adminData } = await supabase
         .from('admin_users')
@@ -40,11 +39,35 @@ const ProtectedRoute = ({ children }) => {
       }
 
       // 2. Si no es admin, verificar suscripción
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('suscripciones')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
+
+      // Si no existe suscripción, crearla automáticamente
+      if (!data && !error) {
+        const hoy = new Date().toISOString().split('T')[0];
+        const vencimiento = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const { data: newSub, error: insertError } = await supabase
+          .from('suscripciones')
+          .insert({
+            user_id: user.id,
+            estado: 'prueba',
+            tipo: 'prueba',
+            fecha_inicio: hoy,
+            fecha_vencimiento: vencimiento
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Error al crear suscripción automática:', insertError);
+          setChecking(false);
+          return;
+        }
+        data = newSub;
+      }
 
       if (error) {
         console.error('Error al obtener suscripción:', error);
@@ -55,6 +78,7 @@ const ProtectedRoute = ({ children }) => {
       if (data) {
         const hoy = new Date();
         const vencimiento = new Date(data.fecha_vencimiento);
+        // Actualizar a vencida si expiró
         if (vencimiento < hoy && (data.estado === 'prueba' || data.estado === 'activa')) {
           await supabase
             .from('suscripciones')
@@ -70,7 +94,7 @@ const ProtectedRoute = ({ children }) => {
     };
 
     checkAccess();
-  }, [user, location.pathname]); // <-- Agrega location.pathname como dependencia
+  }, [user, location.pathname]);
 
   if (loading || checking) {
     return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
