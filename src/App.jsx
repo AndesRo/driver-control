@@ -10,29 +10,24 @@ import OrderList from './components/OrderList';
 import Report from './components/Report';
 import Extras from './components/Extras';
 import AdminUsers from './components/AdminUsers';
-import AdminRoute from './components/AdminRoute';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* ... rutas públicas ... */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/subscription-blocked" element={<SubscriptionBlocked />} />
           <Route path="/*" element={
             <ProtectedRoute>
               <div className="app-container">
                 <Routes>
-                  {/* rutas normales protegidas por suscripción */}
                   <Route path="/" element={<OrderForm />} />
                   <Route path="/ordenes" element={<OrderList />} />
                   <Route path="/extras" element={<Extras />} />
                   <Route path="/reporte" element={<Report />} />
-                  {/* ruta de administración con AdminRoute */}
-                  <Route path="/admin" element={
-                    <AdminRoute>
-                      <AdminUsers />
-                    </AdminRoute>
-                  } />
+                  <Route path="/admin" element={<AdminUsers />} />
                 </Routes>
                 <Navbar />
               </div>
