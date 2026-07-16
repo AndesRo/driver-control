@@ -37,7 +37,7 @@ const LoginPage = () => {
         {/* Mensaje de bienvenida */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-white drop-shadow-lg tracking-tight">
-            Driver<span className="text-orange-500">Control</span>
+            Driver<span className="text-orange-500">Boos</span>
           </h1>
           <p className="text-lg text-gray-400 drop-shadow-md mt-2 font-light">
             Plataforma de gestión de entregas (beta)
@@ -117,7 +117,7 @@ const LoginPage = () => {
       {/* Pie de página */}
       <footer className="mt-8 text-center text-gray-500 text-sm">
         <p>
-          Desarrollado por <span className="text-orange-400 font-medium">AndesDev</span> © {new Date().getFullYear()}
+          Desarrollado por <span className="text-orange-400 font-medium">AndesRo</span> © {new Date().getFullYear()}
         </p>
        
       </footer>

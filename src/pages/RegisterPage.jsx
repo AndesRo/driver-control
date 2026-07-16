@@ -139,7 +139,7 @@ const RegisterPage = () => {
         </div>
       </div>
       <footer className="mt-8 text-center text-gray-500 text-sm">
-        <p>Desarrollado por <span className="text-primary">AndesDev</span> © {new Date().getFullYear()}</p>
+        <p>Desarrollado por <span className="text-primary">AndesRo</span> © {new Date().getFullYear()}</p>
        
       </footer>
     </div>
