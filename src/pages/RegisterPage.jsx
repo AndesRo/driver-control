@@ -140,7 +140,7 @@ const RegisterPage = () => {
       </div>
       <footer className="mt-8 text-center text-gray-500 text-sm">
         <p>Desarrollado por <span className="text-primary">AndesDev</span> © {new Date().getFullYear()}</p>
-        <p className="text-xs text-gray-600">App para conductores</p>
+       
       </footer>
     </div>
   );
