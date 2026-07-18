@@ -12,11 +12,15 @@ const RegisterPage = () => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Limpiar mensajes al cambiar
+    setError('');
+    setMessage('');
   };
 
   const validate = () => {
@@ -42,11 +46,12 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     if (!validate()) return;
     setLoading(true);
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
         options: {
@@ -57,11 +62,60 @@ const RegisterPage = () => {
           }
         }
       });
-      if (signUpError) throw signUpError;
-      alert('Registro exitoso. Por favor, verifica tu correo electrónico para activar tu cuenta.');
-      navigate('/login');
+
+      if (signUpError) {
+        // Manejar error específico si el usuario ya existe
+        if (signUpError.message.includes('already registered')) {
+          setError('Este correo ya está registrado. Por favor, inicia sesión o restablece tu contraseña.');
+        } else {
+          setError(signUpError.message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Si el usuario fue creado exitosamente
+      if (data?.user) {
+        setMessage(`✅ Correo de confirmación enviado a ${form.email}. Revisa tu bandeja de entrada (y spam).`);
+        // Resetear el formulario excepto email y contraseña opcionalmente
+        setForm({
+          nombre: '',
+          apellido: '',
+          telefono: '',
+          email: form.email,
+          password: '',
+          confirmPassword: ''
+        });
+      } else {
+        // Caso raro
+        setMessage('Usuario registrado, pero no se pudo enviar el correo. Contacta a soporte.');
+      }
     } catch (err) {
-      setError(err.message);
+      setError('Error inesperado: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para reenviar el correo de confirmación
+  const handleResendConfirmation = async () => {
+    if (!form.email) {
+      setError('Ingresa el correo para reenviar la confirmación.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: form.email
+      });
+      if (error) {
+        setError('Error al reenviar: ' + error.message);
+      } else {
+        setMessage(`✅ Se reenvió el correo de confirmación a ${form.email}.`);
+      }
+    } catch (err) {
+      setError('Error al reenviar: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -129,18 +183,33 @@ const RegisterPage = () => {
               className="w-full input-lg"
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
+            {message && <p className="text-green-400 text-sm">{message}</p>}
             <button type="submit" className="btn-primary w-full py-3 text-lg" disabled={loading}>
               {loading ? 'Registrando...' : 'Registrarse'}
             </button>
           </form>
+          
+          {/* Botón para reenviar confirmación */}
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-400">
+              ¿No recibiste el correo?{' '}
+              <button 
+                onClick={handleResendConfirmation} 
+                className="text-primary hover:underline"
+                disabled={loading}
+              >
+                Reenviar confirmación
+              </button>
+            </p>
+          </div>
+
           <p className="text-center text-sm text-gray-400 mt-4">
             ¿Ya tienes cuenta? <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
           </p>
         </div>
       </div>
       <footer className="mt-8 text-center text-gray-500 text-sm">
-        <p>Desarrollado por <span className="text-primary">AndesRo</span> © {new Date().getFullYear()}</p>
-       
+        <p>Desarrollado por <span className="text-primary">AndrésRo</span> © {new Date().getFullYear()}</p>
       </footer>
     </div>
   );
