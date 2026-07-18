@@ -211,7 +211,7 @@ const Report = () => {
           onChange={(e) => setStartDate(e.target.value)}
           className="w-auto flex-1"
         />
-        <span className="text-gray-400">a</span>
+        <span className="text-gray-400"></span>
         <input
           type="date"
           value={endDate}
