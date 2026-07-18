@@ -12,19 +12,14 @@ const Report = () => {
   const [endDate, setEndDate] = useState('');
   const [totalBruto, setTotalBruto] = useState(0);
 
-  const fetchData = async () => {
-    if (!user) return;
-
-    let query = supabase
-      .from('orders')
-      .select(`
-        *,
-        extras:tipo, monto, nota, id
-      `)
-      .eq('user_id', user.id);
-
-    if (startDate) query = query.gte('fecha', startDate);
-    if (endDate) query = query.lte('fecha', endDate);
+const fetchData = async () => {
+  if (!user) return;
+  let query = supabase          // ✅ cambiado a let
+    .from('orders')
+    .select(`*, extras:tipo, monto, nota, id`)
+    .eq('user_id', user.id);
+  if (startDate) query = query.gte('fecha', startDate);
+  if (endDate) query = query.lte('fecha', endDate);
 
     const { data: orders, error } = await query.order('fecha', { ascending: false });
 
