@@ -9,7 +9,7 @@ import ConfirmacionExitosa from './pages/ConfirmacionExitosa';
 import OrderForm from './components/OrderForm';
 import OrderList from './components/OrderList';
 import Report from './components/Report';
-import Extras from './components/Extras';
+import Form from './components/Form';
 import AdminUsers from './components/AdminUsers';
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<OrderForm />} />
                   <Route path="/ordenes" element={<OrderList />} />
-                  <Route path="/extras" element={<Extras />} />
+                  <Route path="/formularios" element={<Form />} />
                   <Route path="/reporte" element={<Report />} />
                   <Route path="/admin" element={<AdminUsers />} />
                 </Routes>

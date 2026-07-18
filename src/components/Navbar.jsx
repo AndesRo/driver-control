@@ -34,9 +34,9 @@ const Navbar = () => {
         <span className="icon">📋</span>
         <span className="label">Órdenes</span>
       </NavLink>
-      <NavLink to="/extras" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
-        <span className="icon">💰</span>
-        <span className="label">Extras</span>
+      <NavLink to="/formularios" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
+        <span className="icon">📝</span>
+        <span className="label">Formularios</span>
       </NavLink>
       <NavLink to="/reporte" className={({ isActive }) => (isActive ? 'text-primary' : 'text-gray-400')}>
         <span className="icon">📊</span>

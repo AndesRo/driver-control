@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,25 +22,33 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
+  /* --- Checkboxes --- */
+  input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    accent-color: #ff8c00;
+    cursor: pointer;
+    min-height: unset !important;
+    padding: 0;
+  }
+
   /* --- Ajustes para inputs, selects y textareas (tamaño aumentado) --- */
   input, select, textarea {
     @apply bg-[#2d2d2d] text-[#f0f0f0] border border-[#555] rounded-lg px-4 py-3 w-full;
-    font-size: 18px; /* Tamaño grande para legibilidad */
+    font-size: 18px;
     line-height: 1.5;
     -webkit-appearance: none;
     appearance: none;
     transition: border-color 0.2s, box-shadow 0.2s;
-    min-height: 54px; /* Altura mínima para facilitar el toque */
+    min-height: 54px;
   }
   input:focus, select:focus, textarea:focus {
     @apply outline-none ring-2 ring-[#ff8c00] border-transparent;
   }
-  /* Placeholder más claro */
   input::placeholder, textarea::placeholder {
     color: #888;
     font-size: 16px;
   }
-  /* Estilo específico para inputs numéricos */
   input[type="number"] {
     -moz-appearance: textfield;
   }
@@ -47,7 +57,6 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  /* Select personalizado */
   select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23f0f0f0' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -78,6 +87,13 @@
   }
   .btn-secondary:active {
     @apply bg-[#333] transform scale-[0.98];
+  }
+  /* Botones pequeños para acciones (Admin) */
+  .btn-sm {
+    min-height: 32px;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
   }
   
   /* --- Tarjetas y contenedores --- */
@@ -129,7 +145,7 @@
   .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -4px;
+    padding: 0 4px;
   }
   .table-responsive table {
     min-width: 600px;

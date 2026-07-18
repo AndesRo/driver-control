@@ -11,13 +11,16 @@ const OrderForm = ({ onOrderAdded }) => {
     ruta: '',
     fecha: new Date().toISOString().split('T')[0],
     estado: 'entregado',
-    notas: '',
-    extra_peso: false
+    extra_peso: false,
+    tag: false,
+    capacitacion: false
   });
   const [monto, setMonto] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // Cargar tarifas
+  // Opciones de ruta
+  const rutaOptions = ['1', '2', '3', 'K', 'Sin ruta'];
+
   useEffect(() => {
     const fetchTarifas = async () => {
       const { data, error } = await supabase.from('tarifas').select('*');
@@ -45,50 +48,77 @@ const OrderForm = ({ onOrderAdded }) => {
 
     setLoading(true);
     try {
-      // 1. Insertar la orden
+      // Insertar orden
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert({
           order_number: form.order_number,
           comuna: form.comuna,
-          ruta: form.ruta || 'Sin ruta', // Si no selecciona, usamos "Sin ruta"
+          ruta: form.ruta || 'Sin ruta',
           fecha: form.fecha,
           estado: form.estado,
-          notas: form.notas || '',
           monto_bruto: monto,
-          user_id: user.id
+          user_id: user.id,
+          notas: '' // ya no se usa, pero la columna existe
         })
         .select()
         .single();
 
       if (orderError) throw new Error('Error al guardar orden: ' + orderError.message);
 
-      // 2. Si está marcado extra peso, registrar extra
+      const orderId = orderData.id;
+
+      // Preparar extras seleccionados
+      const extrasToInsert = [];
       if (form.extra_peso) {
-        const { error: extraError } = await supabase
-          .from('extras')
-          .insert({
-            user_id: user.id,
-            tipo: 'extra_peso',
-            monto: 1500,
-            fecha: form.fecha,
-            nota: `Extra peso por orden N° ${form.order_number}`
-          });
-        if (extraError) {
-          console.warn('Error al registrar extra peso:', extraError);
-        }
+        extrasToInsert.push({
+          user_id: user.id,
+          tipo: 'extra_peso',
+          monto: 1500,
+          fecha: form.fecha,
+          nota: `Extra peso por orden N° ${form.order_number}`,
+          order_id: orderId
+        });
+      }
+      if (form.tag) {
+        extrasToInsert.push({
+          user_id: user.id,
+          tipo: 'tag',
+          monto: 1500,
+          fecha: form.fecha,
+          nota: `Tag por orden N° ${form.order_number}`,
+          order_id: orderId
+        });
+      }
+      if (form.capacitacion) {
+        extrasToInsert.push({
+          user_id: user.id,
+          tipo: 'capacitacion',
+          monto: 2000,
+          fecha: form.fecha,
+          nota: `Capacitación por orden N° ${form.order_number}`,
+          order_id: orderId
+        });
       }
 
-      alert('Orden registrada ✅' + (form.extra_peso ? ' + Extra peso $1500' : ''));
-      // Resetear formulario (manteniendo fecha)
+      if (extrasToInsert.length > 0) {
+        const { error: extrasError } = await supabase
+          .from('extras')
+          .insert(extrasToInsert);
+        if (extrasError) console.warn('Error al registrar extras:', extrasError);
+      }
+
+      alert('Orden registrada ✅' + (extrasToInsert.length > 0 ? ` + ${extrasToInsert.length} extra(s)` : ''));
+      // Resetear formulario
       setForm({
         order_number: '',
         comuna: '',
         ruta: '',
         fecha: form.fecha,
         estado: 'entregado',
-        notas: '',
-        extra_peso: false
+        extra_peso: false,
+        tag: false,
+        capacitacion: false
       });
       setMonto(0);
       if (onOrderAdded) onOrderAdded();
@@ -126,7 +156,7 @@ const OrderForm = ({ onOrderAdded }) => {
         ))}
       </select>
 
-      {/* Selector de ruta para todas las comunas */}
+      {/* Selector de ruta fijo */}
       <select
         name="ruta"
         value={form.ruta}
@@ -134,11 +164,9 @@ const OrderForm = ({ onOrderAdded }) => {
         className="w-full"
       >
         <option value="">Seleccionar ruta</option>
-        <option value="1">Ruta 1</option>
-        <option value="2">Ruta 2</option>
-        <option value="3">Ruta 3</option>
-        <option value="K">Ruta K (Kennedy)</option>
-        <option value="Sin ruta">Sin ruta</option>
+        {rutaOptions.map(r => (
+          <option key={r} value={r}>{r}</option>
+        ))}
       </select>
 
       <input
@@ -161,27 +189,43 @@ const OrderForm = ({ onOrderAdded }) => {
         <option value="no_entregado">No entregado</option>
       </select>
 
-      <textarea
-        name="notas"
-        placeholder="Notas (opcional)"
-        value={form.notas}
-        onChange={handleChange}
-        rows="2"
-        className="w-full"
-      />
+      {/* Aquí ya no está el textarea de notas, solo checkboxes de extras */}
+      <div className="space-y-2">
+        <label className="flex items-center gap-3 text-gray-300 cursor-pointer">
+          <input
+            type="checkbox"
+            name="extra_peso"
+            checked={form.extra_peso}
+            onChange={handleChange}
+            className="w-6 h-6 accent-primary"
+          />
+          <span className="text-base">Extra peso ($1.500)</span>
+        </label>
+        <label className="flex items-center gap-3 text-gray-300 cursor-pointer">
+          <input
+            type="checkbox"
+            name="tag"
+            checked={form.tag}
+            onChange={handleChange}
+            className="w-6 h-6 accent-primary"
+          />
+          <span className="text-base">Tag ($1.500) </span>
+        </label>
+        <label className="flex items-center gap-3 text-gray-300 cursor-pointer">
+          <input
+            type="checkbox"
+            name="capacitacion"
+            checked={form.capacitacion}
+            onChange={handleChange}
+            className="w-6 h-6 accent-primary"
+          />
+          <span className="text-base">Capacitación ($2.000)</span>
+        </label>
+      </div>
 
-      <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
-        <input
-          type="checkbox"
-          name="extra_peso"
-          checked={form.extra_peso}
-          onChange={handleChange}
-          className="w-5 h-5 accent-primary"
-        />
-        <span>Agregar Extra peso ($1.500) por pedido de 3 carros o más</span>
-      </label>
+      <div className="text-right font-semibold text-lg">Monto bruto: ${monto}</div>
 
-      <div className="text-right font-semibold">Monto bruto: ${monto}</div>
+      {/* Botón guardar - siempre visible */}
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading ? 'Guardando...' : 'Guardar'}
       </button>
