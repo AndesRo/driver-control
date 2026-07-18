@@ -97,30 +97,6 @@ const RegisterPage = () => {
     }
   };
 
-  // Función para reenviar el correo de confirmación
-  const handleResendConfirmation = async () => {
-    if (!form.email) {
-      setError('Ingresa el correo para reenviar la confirmación.');
-      return;
-    }
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: form.email
-      });
-      if (error) {
-        setError('Error al reenviar: ' + error.message);
-      } else {
-        setMessage(`✅ Se reenvió el correo de confirmación a ${form.email}.`);
-      }
-    } catch (err) {
-      setError('Error al reenviar: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-between p-4 bg-[#1a1a1a]">
       <div className="flex-1 flex items-center justify-center w-full">
@@ -188,29 +164,13 @@ const RegisterPage = () => {
               {loading ? 'Registrando...' : 'Registrarse'}
             </button>
           </form>
-          
-          {/* Botón para reenviar confirmación */}
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-400">
-              ¿No recibiste el correo?{' '}
-              <button 
-                onClick={handleResendConfirmation} 
-                className="text-primary hover:underline"
-                disabled={loading}
-              >
-                Reenviar confirmación
-              </button>
-            </p>
-          </div>
 
           <p className="text-center text-sm text-gray-400 mt-4">
             ¿Ya tienes cuenta? <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
           </p>
         </div>
       </div>
-      <footer className="mt-8 text-center text-gray-500 text-sm">
-        <p>Desarrollado por <span className="text-primary">AndrésRo</span> © {new Date().getFullYear()}</p>
-      </footer>
+
     </div>
   );
 };
