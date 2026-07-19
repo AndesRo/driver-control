@@ -132,15 +132,35 @@ const OrderForm = ({ onOrderAdded }) => {
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-4">
       <h2 className="text-2xl font-bold text-primary">Nueva orden</h2>
-      <input
-        type="text"
-        name="order_number"
-        placeholder="N° orden"
-        required
-        value={form.order_number}
-        onChange={handleChange}
-        className="w-full"
-      />
+
+      {/* Antes: cada input en su propia línea full-width. En móvil eso está perfecto,
+          pero en laptop (hasta ~1152px de .app-container) se veían campos gigantes.
+          Ahora: 1 columna en móvil, 2 columnas en md+ agrupando campos relacionados. */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          type="text"
+          name="order_number"
+          placeholder="N° orden"
+          required
+          value={form.order_number}
+          onChange={handleChange}
+          className="w-full"
+          inputMode="numeric"
+          autoComplete="off"
+        />
+        <select
+          name="ruta"
+          value={form.ruta}
+          onChange={handleChange}
+          className="w-full"
+        >
+          <option value="">Seleccionar ruta</option>
+          {rutaOptions.map(r => (
+            <option key={r} value={r}>{r}</option>
+          ))}
+        </select>
+      </div>
+
       <select
         name="comuna"
         required
@@ -156,38 +176,26 @@ const OrderForm = ({ onOrderAdded }) => {
         ))}
       </select>
 
-      {/* Selector de ruta fijo */}
-      <select
-        name="ruta"
-        value={form.ruta}
-        onChange={handleChange}
-        className="w-full"
-      >
-        <option value="">Seleccionar ruta</option>
-        {rutaOptions.map(r => (
-          <option key={r} value={r}>{r}</option>
-        ))}
-      </select>
-
-      <input
-        type="date"
-        name="fecha"
-        required
-        value={form.fecha}
-        onChange={handleChange}
-        className="w-full"
-      />
-
-      <select
-        name="estado"
-        value={form.estado}
-        onChange={handleChange}
-        className="w-full"
-      >
-        <option value="entregado">Entregado</option>
-        <option value="parcial">Entrega parcial</option>
-        <option value="no_entregado">No entregado</option>
-      </select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          type="date"
+          name="fecha"
+          required
+          value={form.fecha}
+          onChange={handleChange}
+          className="w-full"
+        />
+        <select
+          name="estado"
+          value={form.estado}
+          onChange={handleChange}
+          className="w-full"
+        >
+          <option value="entregado">Entregado</option>
+          <option value="parcial">Entrega parcial</option>
+          <option value="no_entregado">No entregado</option>
+        </select>
+      </div>
 
       {/* Aquí ya no está el textarea de notas, solo checkboxes de extras */}
       <div className="space-y-2">
@@ -225,7 +233,8 @@ const OrderForm = ({ onOrderAdded }) => {
 
       <div className="text-right font-semibold text-lg">Monto bruto: ${monto}</div>
 
-      {/* Botón guardar - siempre visible */}
+      {/* Botón guardar - siempre visible, full-width incluso en laptop
+          para que sea un blanco claro de acción al final del form */}
       <button type="submit" className="btn-primary w-full" disabled={loading}>
         {loading ? 'Guardando...' : 'Guardar'}
       </button>

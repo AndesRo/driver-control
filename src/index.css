@@ -89,6 +89,26 @@
     padding: 12px 24px;
     border-radius: 12px;
   }
+  /* .btn-primary y .btn-secondary llevan su propia geometría (no solo color).
+     Antes dependían del selector de etiqueta "button" de arriba para el
+     padding/alto/radio — por eso un <a className="btn-primary"> (como los
+     links a Typeform) se veía delgado: un <a> nunca hereda reglas de "button".
+     Ahora funcionan igual sea <button> o <a>. */
+  .btn-primary,
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s;
+  }
   .btn-primary {
     @apply bg-[#ff8c00] hover:bg-[#e67e00] text-white shadow-lg;
   }
@@ -136,10 +156,12 @@
   }
   .navbar a, .navbar button {
     @apply flex flex-col items-center text-xs;
-    min-width: 60px;
+    /* flex:1 en vez de min-width fijo: los items se reparten el ancho
+       disponible y NUNCA desbordan, sea que haya 5 o 6 (con Admin) */
+    flex: 1 1 0;
+    min-width: 0;
     min-height: 50px;
-    padding: 4px 0;
-    /* los botones del navbar no deben heredar el tamaño táctil de "button" */
+    padding: 4px 2px;
     font-size: inherit;
   }
   .navbar .icon {
@@ -150,6 +172,9 @@
     font-size: 0.7rem;
     margin-top: 2px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   /* --- Lista de órdenes --- */
@@ -268,7 +293,9 @@
     min-height: 44px;
     @apply py-2;
   }
-  button {
+  button,
+  .btn-primary,
+  .btn-secondary {
     font-size: 15px;
     min-height: 44px;
     padding: 10px 20px;
@@ -296,5 +323,4 @@
     padding: 0 40px;
   }
 }
-
 

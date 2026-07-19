@@ -204,20 +204,28 @@ const Report = () => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold text-primary mb-4">Reportes</h2>
-      <div className="flex flex-wrap gap-2 mb-4">
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="w-auto flex-1"
-        />
-        <span className="text-gray-400"></span>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="w-auto flex-1"
-        />
+
+      {/* Antes: <div className="flex flex-wrap gap-2 mb-4"> con w-auto flex-1 en los inputs.
+          Ahora usa .filter-container (definida en index.css), que ya trae flex-wrap,
+          gap y el fix responsive para pantallas <=380px (fechas pasan a 100% de ancho
+          en vez de aplastarse una junto a la otra). */}
+      <div className="filter-container mb-4">
+        <div className="flex flex-col flex-1 min-w-[130px]">
+          <label className="text-xs text-muted mb-1">Desde</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col flex-1 min-w-[130px]">
+          <label className="text-xs text-muted mb-1">Hasta</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
         <button
           className="btn-secondary"
           onClick={() => {
@@ -260,7 +268,7 @@ const Report = () => {
         </div>
       </div>
 
-      <div className="flex gap-2 mt-4">
+      <div className="flex flex-wrap gap-2 mt-4">
         <button className="btn-primary flex-1" onClick={exportExcel}>
           📊 Excel
         </button>

@@ -189,16 +189,22 @@ const OrderList = () => {
                     }`}>
                       {order.estado}
                     </span>
+                    {/* Antes: className="text-blue-400 text-xs p-1" sin .btn-sm.
+                        El <button> global tiene min-height:54px, así que estos íconos
+                        quedaban dentro de un botón gigante mal proporcionado.
+                        Ahora usan .btn-sm (definida en index.css para esto mismo). */}
                     <div className="mt-1 flex gap-1 justify-end">
                       <button
-                        className="text-blue-400 text-xs p-1"
+                        className="btn-sm text-blue-400 bg-transparent"
                         onClick={() => startEdit(order)}
+                        aria-label="Editar orden"
                       >
                         ✏️
                       </button>
                       <button
-                        className="text-red-400 text-xs p-1"
+                        className="btn-sm text-red-400 bg-transparent"
                         onClick={() => handleDelete(order.id)}
+                        aria-label="Eliminar orden"
                       >
                         🗑️
                       </button>

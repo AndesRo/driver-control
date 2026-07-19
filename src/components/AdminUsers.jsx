@@ -245,25 +245,27 @@ const AdminUsers = () => {
                     <td className="p-3">{sub.tipo || 'N/A'}</td>
                     <td className="p-3">{sub.fecha_vencimiento || 'N/A'}</td>
                     <td className="p-3">
+                      {/* min-h-0 en los 3 botones: sin esto, el <button> global (min-height:54px)
+                          inflaba cada fila de la tabla a 54px+ con texto descentrado */}
                       <div className="flex flex-wrap gap-1">
                         <button
                           onClick={() => handleActivar(u.id)}
                           disabled={loadingAction}
-                          className={`bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded transition ${loadingAction === 'activar' ? 'opacity-50' : ''}`}
+                          className={`min-h-0 bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded transition ${loadingAction === 'activar' ? 'opacity-50' : ''}`}
                         >
                           {loadingAction === 'activar' ? '...' : 'Activar'}
                         </button>
                         <button
                           onClick={() => handleSuspender(u.id)}
                           disabled={loadingAction}
-                          className={`bg-yellow-600 hover:bg-yellow-700 text-white text-xs px-3 py-1 rounded transition ${loadingAction === 'suspender' ? 'opacity-50' : ''}`}
+                          className={`min-h-0 bg-yellow-600 hover:bg-yellow-700 text-white text-xs px-3 py-1 rounded transition ${loadingAction === 'suspender' ? 'opacity-50' : ''}`}
                         >
                           {loadingAction === 'suspender' ? '...' : 'Suspender'}
                         </button>
                         <button
                           onClick={() => handleExtender(u.id)}
                           disabled={loadingAction}
-                          className={`bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded transition ${loadingAction === 'extender' ? 'opacity-50' : ''}`}
+                          className={`min-h-0 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded transition ${loadingAction === 'extender' ? 'opacity-50' : ''}`}
                         >
                           {loadingAction === 'extender' ? '...' : 'Extender'}
                         </button>
@@ -306,25 +308,27 @@ const AdminUsers = () => {
                   <span>Tipo: {sub.tipo || 'N/A'}</span>
                   <span className="ml-4">Vence: {sub.fecha_vencimiento || 'N/A'}</span>
                 </div>
+                {/* Mismo fix: min-h-0 para que los 3 botones sean pills compactos
+                    en vez de bloques de 54px de alto en la tarjeta móvil */}
                 <div className="flex flex-wrap gap-2 mt-2">
                   <button
                     onClick={() => handleActivar(u.id)}
                     disabled={loadingAction}
-                    className={`bg-green-600 hover:bg-green-700 text-white text-xs px-4 py-2 rounded flex-1 transition ${loadingAction === 'activar' ? 'opacity-50' : ''}`}
+                    className={`min-h-0 bg-green-600 hover:bg-green-700 text-white text-xs px-4 py-2 rounded flex-1 transition ${loadingAction === 'activar' ? 'opacity-50' : ''}`}
                   >
                     {loadingAction === 'activar' ? '...' : 'Activar'}
                   </button>
                   <button
                     onClick={() => handleSuspender(u.id)}
                     disabled={loadingAction}
-                    className={`bg-yellow-600 hover:bg-yellow-700 text-white text-xs px-4 py-2 rounded flex-1 transition ${loadingAction === 'suspender' ? 'opacity-50' : ''}`}
+                    className={`min-h-0 bg-yellow-600 hover:bg-yellow-700 text-white text-xs px-4 py-2 rounded flex-1 transition ${loadingAction === 'suspender' ? 'opacity-50' : ''}`}
                   >
                     {loadingAction === 'suspender' ? '...' : 'Suspender'}
                   </button>
                   <button
                     onClick={() => handleExtender(u.id)}
                     disabled={loadingAction}
-                    className={`bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded flex-1 transition ${loadingAction === 'extender' ? 'opacity-50' : ''}`}
+                    className={`min-h-0 bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded flex-1 transition ${loadingAction === 'extender' ? 'opacity-50' : ''}`}
                   >
                     {loadingAction === 'extender' ? '...' : 'Extender'}
                   </button>
@@ -341,7 +345,8 @@ const AdminUsers = () => {
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="bg-[#2d2d2d] text-white px-4 py-2 rounded disabled:opacity-40 hover:bg-[#3d3d3d] transition"
+            className="min-h-0 bg-[#2d2d2d] text-white px-4 py-2 rounded disabled:opacity-40 hover:bg-[#3d3d3d] transition"
+            aria-label="Página anterior"
           >
             ◀
           </button>
@@ -351,7 +356,8 @@ const AdminUsers = () => {
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="bg-[#2d2d2d] text-white px-4 py-2 rounded disabled:opacity-40 hover:bg-[#3d3d3d] transition"
+            className="min-h-0 bg-[#2d2d2d] text-white px-4 py-2 rounded disabled:opacity-40 hover:bg-[#3d3d3d] transition"
+            aria-label="Página siguiente"
           >
             ▶
           </button>
