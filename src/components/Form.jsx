@@ -1,24 +1,93 @@
+import { useAuth } from '../context/AuthContext';
+
 const Form = () => {
+  const { user } = useAuth();
+  const today = new Date().toISOString().split('T')[0];
+
+  const nombreCompleto = user?.user_metadata?.nombre && user?.user_metadata?.apellido
+    ? `${user.user_metadata.nombre} ${user.user_metadata.apellido}`
+    : user?.email || 'Usuario';
+
+  const enviarBoleta = () => {
+    const asunto = encodeURIComponent('Boleta de honorarios - ' + nombreCompleto);
+    const cuerpo = encodeURIComponent(
+      `Estimados,\n\nAdjunto mi boleta de honorarios correspondiente al mes de Junio.\n\nSaludos cordiales,\n${nombreCompleto}`
+    );
+    window.open(`mailto:finanzas@boosmap.com?subject=${asunto}&body=${cuerpo}`, '_blank');
+  };
+
+  const contactarSAF = () => {
+    const asunto = encodeURIComponent('Consulta SAF - ' + nombreCompleto);
+    const cuerpo = encodeURIComponent(
+      `Hola,\n\nMe comunico para consultar sobre...\n\nNombre: ${nombreCompleto}\nEmail: ${user?.email || ''}\n\nSaludos.`
+    );
+    window.open(`mailto:saf@boosmap.com?subject=${asunto}&body=${cuerpo}`, '_blank');
+  };
+
   return (
-    <div className="p-4 space-y-4">
-      <h2 className="text-2xl font-bold text-primary">Formularios externos</h2>
-      <div className="card space-y-3">
-        <a
-          href="https://boosmap.typeform.com/to/sFgws2bM"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary block text-center"
-        >
-          📋 JUMBO VA
-        </a>
-        <a
-          href="https://boosmap.typeform.com/to/tVQ0iVHF"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary block text-center"
-        >
-          📋 EXTRAS
-        </a>
+    <div className="p-4 space-y-6 max-w-full">
+      <h2 className="text-2xl font-bold text-primary">📄 Información de Boleta</h2>
+
+      {/* Datos de la boleta */}
+      <div className="card">
+        <h3 className="font-semibold text-lg text-white mb-3">Datos de la boleta</h3>
+        <div className="space-y-2 text-gray-300">
+          <p><span className="font-medium text-gray-400">Fecha:</span> {today}</p>
+          <p><span className="font-medium text-gray-400">A nombre de:</span> INVERSIONES ASINARA SPA</p>
+          <p><span className="font-medium text-gray-400">RUT:</span> 76.456.187-2</p>
+          <p><span className="font-medium text-gray-400">Dirección:</span> AV. ANDRES BELLO 2777 Piso 19 Oficina 01, LAS CONDES</p>
+          <p><span className="font-medium text-gray-400">Giro:</span> OTRAS ACTIVIDADES CONEXAS AL TRANSPORTE</p>
+          <p><span className="font-medium text-gray-400">Enviar a:</span> finanzas@boosmap.com</p>
+        </div>
+      </div>
+
+      {/* Prestación + botones (SII, finanzas, SAF) */}
+      <div className="card">
+        <h3 className="font-semibold text-lg text-white mb-3"></h3>
+        <p className="text-gray-300 mb-4"></p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={() => window.open('https://homer.sii.cl/', '_blank')}
+            className="btn-secondary flex-1 flex items-center justify-center gap-2"
+          >
+            <span>📋</span> Ir al SII (homer.sii.cl)
+          </button>
+          <button
+            onClick={enviarBoleta}
+            className="btn-primary flex-1 flex items-center justify-center gap-2"
+          >
+            <span>✉️</span> finanzas
+          </button>
+          <button
+            onClick={contactarSAF}
+            className="btn-secondary flex-1 flex items-center justify-center gap-2"
+          >
+            <span>💬</span> Contactar SAF
+          </button>
+        </div>
+      </div>
+
+      {/* Formularios externos */}
+      <div className="card">
+        <h3 className="font-semibold text-lg text-white mb-3">Formularios externos</h3>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <a
+            href="https://boosmap.typeform.com/to/sFgws2bM"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary flex-1 text-center"
+          >
+            📋 JUMBO VA
+          </a>
+          <a
+            href="https://boosmap.typeform.com/to/tVQ0iVHF"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary flex-1 text-center"
+          >
+            📋 EXTRAS
+          </a>
+        </div>
       </div>
     </div>
   );

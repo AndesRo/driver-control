@@ -105,9 +105,30 @@
   
   /* --- Contenedor principal --- */
   .app-container {
-    @apply max-w-md mx-auto pb-24 min-h-screen bg-[#1a1a1a];
+    @apply mx-auto min-h-screen bg-[#1a1a1a] pb-24;
     width: 100%;
-    padding: 0 12px;
+    max-width: 100%;
+    padding: 0 16px;
+  }
+  
+  /* Ajuste para pantallas grandes */
+  @media (min-width: 768px) {
+    .app-container {
+      max-width: 720px;
+      padding: 0 24px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .app-container {
+      max-width: 960px;
+      padding: 0 32px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .app-container {
+      max-width: 1152px;
+      padding: 0 40px;
+    }
   }
   
   /* --- Barra de navegación inferior --- */
