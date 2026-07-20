@@ -46,7 +46,7 @@ const Form = () => {
 
         {/* Sección 2: Prestación y acciones */}
         <div>
-          <h3 className="font-semibold text-lg text-white mb-3">Prestación y acciones</h3>
+          <h3 className="font-semibold text-lg text-white mb-3"></h3>
           <p className="text-gray-300 mb-4"></p>
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -78,7 +78,7 @@ const Form = () => {
 
         {/* Sección 3: Formularios externos */}
         <div>
-          <h3 className="font-semibold text-lg text-white mb-3">Formularios Boosmap</h3>
+          <h3 className="font-semibold text-lg text-white mb-3">Formularios de Registros Boosmap</h3>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="https://boosmap.typeform.com/to/sFgws2bM"
