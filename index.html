@@ -7,26 +7,10 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 
-    <!-- Responsive -->
-    <!--
-      viewport-fit=cover es la clave que faltaba: sin esto, env(safe-area-inset-bottom)
-      en el CSS no se activa y tu navbar fijo puede quedar tapado por el home indicator
-      en iPhones con notch (X en adelante).
-
-      Se quita "maximum-scale=1.0, user-scalable=no" porque bloquea el zoom por completo
-      (problema de accesibilidad). Si de verdad lo necesitas para que se sienta como app
-      nativa, la variante restrictiva queda comentada abajo.
-    -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <!--
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    />
-    -->
 
     <!-- PWA -->
     <meta name="theme-color" content="#ff8c00" />
@@ -43,7 +27,7 @@
 
     <meta
       name="description"
-      content="App para conductores. Registra entregas, controla ganancias, gastos, rutas y suscripción."
+      content="App para conductores de Jumbo/Boosmap. Registra entregas, controla ganancias y genera reportes al instante."
     />
 
     <meta
@@ -53,46 +37,34 @@
 
     <meta name="author" content="Andres Romero" />
 
-    <!-- Open Graph -->
+    <!-- ==================== OPEN GRAPH (WhatsApp, Facebook, etc.) ==================== -->
     <meta property="og:type" content="website" />
-
-    <meta
-      property="og:url"
-      content="https://driverboos.vercel.app/"
-    />
-
-    <meta property="og:title" content="DriverBoos" />
-
+    <meta property="og:url" content="https://driverboos.vercel.app/" />
+    <meta property="og:title" content="DriverBoos - Control de entregas" />
     <meta
       property="og:description"
-      content="Registra tus entregas, controla rutas, gastos y genera reportes."
+      content="Registra tus entregas, controla rutas, gastos y genera reportes financieros al instante."
     />
-
     <meta
       property="og:image"
       content="https://driverboos.vercel.app/icons/icon-512x512.png"
     />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
+    <meta property="og:image:secure_url" content="https://driverboos.vercel.app/icons/icon-512x512.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Logo de DriverBoos con fondo naranja y texto" />
     <meta property="og:site_name" content="DriverBoos" />
     <meta property="og:locale" content="es_CL" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-
-    <meta
-      name="twitter:url"
-      content="https://driverboos.vercel.app/"
-    />
-
-    <meta name="twitter:title" content="DriverBoos" />
-
+    <meta name="twitter:url" content="https://driverboos.vercel.app/" />
+    <meta name="twitter:title" content="DriverBoos - Control de entregas" />
     <meta
       name="twitter:description"
       content="Controla tus entregas y ganancias desde cualquier dispositivo."
     />
-
     <meta
       name="twitter:image"
       content="https://driverboos.vercel.app/icons/icon-512x512.png"
