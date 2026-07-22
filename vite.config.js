@@ -7,7 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: [
+        'favicon.ico',
+        'apple-touch-icon.png',
+        'mask-icon.svg',
+        'social-image.png', // ✅ agregado para precache
+      ],
       manifest: {
         name: 'Driver Boos',
         short_name: 'DriverBoos',
