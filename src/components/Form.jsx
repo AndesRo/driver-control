@@ -26,7 +26,6 @@ const Form = () => {
 
   return (
     <div className="p-4 max-w-full">
-      <h2 className="text-2xl font-bold text-primary mb-4">📄 Información de Boleta</h2>
 
       {/* Antes: space-y-6 entre secciones + space-y-2 con cada dato en su
           propia línea = mucho scroll para poco contenido. Ahora space-y-4
@@ -87,7 +86,7 @@ const Form = () => {
 
         {/* Sección 3: Formularios externos */}
         <div>
-          <h3 className="font-semibold text-lg text-white mb-2">Formularios de Registros</h3>
+        
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="https://boosmap.typeform.com/to/sFgws2bM"
