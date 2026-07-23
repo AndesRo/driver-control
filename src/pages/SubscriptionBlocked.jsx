@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 // ⚠️ Ajusta esta ruta al archivo donde tengas inicializado tu cliente de Supabase
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase';
 
 // ⚠️ Reemplaza estos datos con los reales del administrador
 const DATOS_BANCARIOS = {
