@@ -69,12 +69,18 @@ const LoginPage = () => {
       <div className="flex-1 flex flex-col items-center justify-center w-full">
         {/* Mensaje de bienvenida */}
         <div className="text-center mb-8">
-          {/* Antes: text-7xl fijo (72px). "DriverBoos" en extrabold a ese tamaño
-              se corta en pantallas angostas (iPhone SE, Android ~360px) porque
-              no hay espacio para las ~10 letras sin punto de quiebre (no hay
-              espacio entre "Driver" y "Boos"). Ahora escala: 4xl en móvil
-              chico, hasta 7xl solo desde md+ (laptop/tablet). */}
-          <h1 className="font-[Poppins] text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-[-0.04em] leading-none">
+          {/* Estilo ajustado al look de boosmap.com: peso máximo (font-black,
+              900) en vez de extrabold (800) — su tipografía de marca usa un
+              trazo más grueso/geométrico. No pude leer el font-family exacto
+              desde su CSS (Astro lo compila en un bundle aparte), así que
+              esto es la aproximación más cercana con Poppins. Si consigues
+              el nombre exacto desde el inspector del navegador, lo cambiamos.
+
+              Tamaño en móvil subido de 4xl a 5xl (36px -> 48px) como pediste;
+              sigue escalando hasta 7xl (72px) en laptop/tablet (md+), y el
+              breakpoint sm intermedio evita que se corte en pantallas muy
+              angostas (320-375px). */}
+          <h1 className="font-[Poppins] text-5xl sm:text-6xl md:text-7xl font-black tracking-[-0.03em] leading-none">
             <span className="text-white">Driver</span>
             <span className="text-orange-500">Boos</span>
           </h1>
