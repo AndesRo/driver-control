@@ -1,7 +1,29 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
+
+/**
+ * NOTA IMPORTANTE DE ARQUITECTURA
+ * --------------------------------
+ * El cálculo de "¿está vencida la suscripción?" y su escritura en la BD
+ * (estado: 'vencida') se mantienen aquí por compatibilidad con el código
+ * original, PERO esto es responsabilidad del backend, no del cliente:
+ *
+ * 1. La fecha usada (`new Date()` del navegador) la controla el usuario.
+ * 2. El `UPDATE` que marca 'vencida' requiere permiso de escritura del
+ *    cliente sobre `suscripciones` vía RLS. Si esa política existe,
+ *    un usuario podría en teoría intentar escribir directamente sobre
+ *    su fila (aunque solo puede marcarse a sí mismo como 'vencida' con
+ *    este código específico, cualquier política de UPDATE abierta sobre
+ *    esa tabla es riesgosa a futuro).
+ *
+ * Recomendado: mover esta actualización a una Supabase Edge Function /
+ * cron job (pg_cron) que use CURRENT_DATE del servidor, y restringir
+ * RLS de 'suscripciones' a solo lectura para el rol autenticado normal.
+ * Mientras tanto, este archivo corrige los bugs de timezone y de
+ * carrera que sí son responsabilidad del frontend.
+ */
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -10,21 +32,40 @@ export const AuthProvider = ({ children }) => {
   const [isSubscriptionActive, setIsSubscriptionActive] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
+  // Ref para saber si el componente sigue montado dentro de funciones async
+  // que pueden resolver después de un unmount (evita warnings y updates
+  // fantasma).
+  const mountedRef = useRef(true);
+
+  // Parsea una fecha 'YYYY-MM-DD' (columna `date` de Postgres) como fecha
+  // LOCAL, evitando el desfase de un día que provoca `new Date(str)`
+  // (que interpreta el string como UTC medianoche).
+  const parseLocalDate = (dateStr) => {
+    if (!dateStr) return null;
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const loadSubscription = async (userId) => {
     if (!userId) {
-      setSuscripcion(null);
-      setIsSubscriptionActive(false);
-      setSubscriptionLoading(false);
+      if (mountedRef.current) {
+        setSuscripcion(null);
+        setIsSubscriptionActive(false);
+        setSubscriptionLoading(false);
+      }
       return;
     }
 
-    setSubscriptionLoading(true);
+    if (mountedRef.current) setSubscriptionLoading(true);
+
     try {
       const { data, error } = await supabase
         .from('suscripciones')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
+
+      if (!mountedRef.current) return;
 
       if (error) {
         console.error('Error al cargar suscripción:', error);
@@ -35,109 +76,90 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (!data) {
-        // No existe suscripción (caso extremo): creamos una por defecto con estado 'vencida'
-        // Esto no debería ocurrir si el trigger funciona correctamente.
-        const { data: newSub, error: insertError } = await supabase
-          .from('suscripciones')
-          .insert({ user_id: userId, estado: 'vencida', tipo: 'vencida', fecha_inicio: new Date().toISOString().split('T')[0], fecha_vencimiento: new Date().toISOString().split('T')[0] })
-          .select()
-          .single();
-        if (!insertError) {
-          setSuscripcion(newSub);
-          setIsSubscriptionActive(false);
-        } else {
-          console.error('No se pudo crear suscripción:', insertError);
-          setSuscripcion(null);
-          setIsSubscriptionActive(false);
-        }
+        // No existe suscripción (caso extremo): esto no debería ocurrir
+        // si el trigger de creación en la BD funciona correctamente.
+        // Se loguea como anomalía en vez de "auto-repararse" insertando
+        // desde el cliente, para no ocultar el bug real y no requerir
+        // permiso de INSERT desde el frontend.
+        console.error(
+          `[Auth] Usuario ${userId} no tiene fila en 'suscripciones'. ` +
+          `Revisar el trigger de creación de suscripción en la BD.`
+        );
+        setSuscripcion(null);
+        setIsSubscriptionActive(false);
         setSubscriptionLoading(false);
         return;
       }
 
-      // Verificar si la suscripción ha expirado y actualizar si es necesario
+      // --- Verificación de vencimiento ---
+      // El UPDATE a 'vencida' ya NO se hace desde el cliente: ahora lo
+      // ejecuta a diario una función SECURITY DEFINER programada con
+      // pg_cron en el servidor (ver migracion_suscripciones_rls_cron.sql).
+      // RLS bloquea cualquier intento de UPDATE desde el rol
+      // 'authenticated', así que aquí solo LEEMOS el estado ya calculado.
+      // Puede haber hasta ~24h de desfase entre el vencimiento real y la
+      // actualización del campo 'estado' en la BD; por eso, además de
+      // confiar en 'estado', recalculamos 'activa' comparando también
+      // contra 'fecha_vencimiento' localmente, para que la UI sea
+      // correcta incluso en esa ventana.
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
-      const vencimiento = data.fecha_vencimiento ? new Date(data.fecha_vencimiento) : null;
-      let estadoActual = data.estado;
+      const vencimiento = parseLocalDate(data.fecha_vencimiento);
+      const estadoActual = data.estado;
 
-      if (vencimiento) {
-        vencimiento.setHours(0, 0, 0, 0);
-        // Si la fecha de vencimiento es menor a hoy y el estado es 'activa' o 'prueba', actualizar a 'vencida'
-        if (vencimiento < hoy && (estadoActual === 'activa' || estadoActual === 'prueba')) {
-          console.log(`Suscripción expirada. Actualizando a vencida.`);
-          const { error: updateError } = await supabase
-            .from('suscripciones')
-            .update({ estado: 'vencida' })
-            .eq('id', data.id);
-          if (!updateError) {
-            estadoActual = 'vencida';
-            data.estado = 'vencida';
-          } else {
-            console.error('Error al actualizar suscripción a vencida:', updateError);
-          }
-        }
-      }
+      if (!mountedRef.current) return;
 
       setSuscripcion(data);
 
-      // Determinar si la suscripción está activa: estado 'activa' o 'prueba' y fecha de vencimiento válida
-      const activa = (estadoActual === 'activa' || estadoActual === 'prueba') && vencimiento && vencimiento >= hoy;
+      const activa =
+        (estadoActual === 'activa' || estadoActual === 'prueba') &&
+        vencimiento && vencimiento >= hoy;
       setIsSubscriptionActive(activa);
-      console.log(`Suscripción: ${activa ? 'ACTIVA' : 'INACTIVA'} (estado: ${estadoActual}, vencimiento: ${data.fecha_vencimiento})`);
-    } catch (error) {
-      console.error('Error inesperado en loadSubscription:', error);
-      setSuscripcion(null);
-      setIsSubscriptionActive(false);
+
+      console.log(
+        `Suscripción: ${activa ? 'ACTIVA' : 'INACTIVA'} ` +
+        `(estado: ${estadoActual}, vencimiento: ${data.fecha_vencimiento})`
+      );
+    } catch (err) {
+      console.error('Error inesperado en loadSubscription:', err);
+      if (mountedRef.current) {
+        setSuscripcion(null);
+        setIsSubscriptionActive(false);
+      }
     } finally {
-      setSubscriptionLoading(false);
+      if (mountedRef.current) setSubscriptionLoading(false);
     }
   };
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
-    const getSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (mounted) {
-          const currentUser = session?.user ?? null;
-          setUser(currentUser);
-          setLoading(false);
-          if (currentUser) {
-            await loadSubscription(currentUser.id);
-          } else {
-            setSubscriptionLoading(false);
-          }
-        }
-      } catch (err) {
-        console.error('Error al obtener sesión:', err);
-        if (mounted) {
-          setUser(null);
-          setLoading(false);
-          setSubscriptionLoading(false);
-        }
-      }
-    };
-
-    getSession();
-
+    // Solo usamos el listener de onAuthStateChange como fuente única de
+    // verdad. En Supabase JS v2, este listener dispara un evento
+    // INITIAL_SESSION apenas se registra, por lo que ya cubre la carga
+    // inicial: no hace falta llamar a getSession() por separado (evitamos
+    // así la doble ejecución de loadSubscription al montar).
     const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (mounted) {
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
-        setLoading(false);
-        if (currentUser) {
-          await loadSubscription(currentUser.id);
-        } else {
-          setSuscripcion(null);
-          setIsSubscriptionActive(false);
-          setSubscriptionLoading(false);
-        }
+      if (!mountedRef.current) return;
+
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      setLoading(false);
+
+      if (currentUser) {
+        // Evitamos recargar la suscripción en refrescos silenciosos de
+        // token, que no cambian el estado de la suscripción.
+        if (event === 'TOKEN_REFRESHED') return;
+        await loadSubscription(currentUser.id);
+      } else {
+        setSuscripcion(null);
+        setIsSubscriptionActive(false);
+        setSubscriptionLoading(false);
       }
     });
 
     return () => {
-      mounted = false;
+      mountedRef.current = false;
       listener?.subscription?.unsubscribe();
     };
   }, []);
@@ -159,8 +181,8 @@ export const AuthProvider = ({ children }) => {
       email,
       password,
       options: {
-        data: metadata
-      }
+        data: metadata,
+      },
     });
     if (error) throw error;
     // No creamos suscripción aquí; confiamos en el trigger de la base de datos.
