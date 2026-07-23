@@ -48,28 +48,36 @@ const ResetPassword = () => {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            {/* htmlFor + id agregados: antes el label no estaba asociado al
+                input, así que un lector de pantalla no vinculaba ambos y
+                tocar el texto no enfocaba el campo en móvil. */}
+            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300 mb-1">
               Nueva contraseña
             </label>
             <input
+              id="newPassword"
               type="password"
               placeholder="••••••••"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              minLength={6}
+              autoComplete="new-password"
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
               Confirmar contraseña
             </label>
             <input
+              id="confirmPassword"
               type="password"
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              autoComplete="new-password"
               className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
             />
           </div>
