@@ -10,13 +10,20 @@ const OrderForm = ({ onOrderAdded }) => {
     comuna: '',
     fecha: new Date().toISOString().split('T')[0],
     estado: 'entregado',
-    notas: '', // Nuevo campo para notas/bonos especiales
+    notas: '',
     extra_peso: false,
     tag: false,
     capacitacion: false
   });
   const [monto, setMonto] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  // Definición de extras (para la interfaz)
+  const extrasList = [
+    { key: 'extra_peso', label: 'Extra peso', monto: 1500, icon: '💪', description: 'Pedido de 3 carros o más' },
+    { key: 'tag', label: 'Tag', monto: 1500, icon: '🏷️', description: 'Huechurapa, Conchalí, Independencia, Recoleta' },
+    { key: 'capacitacion', label: 'Capacitación', monto: 2000, icon: '🎓', description: 'Capacitación realizada' },
+  ];
 
   useEffect(() => {
     const fetchTarifas = async () => {
@@ -34,6 +41,11 @@ const OrderForm = ({ onOrderAdded }) => {
       const selected = comunas.find(c => c.comuna === value);
       setMonto(selected ? selected.monto_bruto : 0);
     }
+  };
+
+  // Toggle de extras (por tarjeta)
+  const toggleExtra = (key) => {
+    setForm(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleSubmit = async (e) => {
@@ -55,7 +67,7 @@ const OrderForm = ({ onOrderAdded }) => {
           estado: form.estado,
           monto_bruto: monto,
           user_id: user.id,
-          notas: form.notas || '' // Guardar notas
+          notas: form.notas || ''
         })
         .select()
         .single();
@@ -141,7 +153,6 @@ const OrderForm = ({ onOrderAdded }) => {
           inputMode="numeric"
           autoComplete="off"
         />
-        {/* Reemplazo: campo de notas en lugar de ruta */}
         <input
           type="text"
           name="notas"
@@ -188,37 +199,48 @@ const OrderForm = ({ onOrderAdded }) => {
         </select>
       </div>
 
+      {/* Extras como tarjetas interactivas */}
       <div className="space-y-2">
-        <label className="flex items-center gap-3 text-gray-300 cursor-pointer">
-          <input
-            type="checkbox"
-            name="extra_peso"
-            checked={form.extra_peso}
-            onChange={handleChange}
-            className="w-6 h-6 accent-primary"
-          />
-          <span className="text-base">Extra peso ($1.500)</span>
-        </label>
-        <label className="flex items-center gap-3 text-gray-300 cursor-pointer">
-          <input
-            type="checkbox"
-            name="tag"
-            checked={form.tag}
-            onChange={handleChange}
-            className="w-6 h-6 accent-primary"
-          />
-          <span className="text-base">Tag ($1.500)</span>
-        </label>
-        <label className="flex items-center gap-3 text-gray-300 cursor-pointer">
-          <input
-            type="checkbox"
-            name="capacitacion"
-            checked={form.capacitacion}
-            onChange={handleChange}
-            className="w-6 h-6 accent-primary"
-          />
-          <span className="text-base">Capacitación ($2.000)</span>
-        </label>
+        <label className="block text-sm font-medium text-gray-300">Extras</label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {extrasList.map((extra) => {
+            const isActive = form[extra.key];
+            return (
+              <div
+                key={extra.key}
+                onClick={() => toggleExtra(extra.key)}
+                className={`
+                  cursor-pointer rounded-xl p-3 border-2 transition-all duration-200
+                  ${isActive
+                    ? 'border-primary bg-[#3a3a3a] shadow-lg shadow-primary/20'
+                    : 'border-[#555] bg-[#2d2d2d] hover:border-[#777]'
+                  }
+                `}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{extra.icon}</span>
+                    <div>
+                      <div className={`font-semibold ${isActive ? 'text-primary' : 'text-gray-300'}`}>
+                        {extra.label}
+                      </div>
+                      <div className="text-xs text-gray-400">{extra.description}</div>
+                    </div>
+                  </div>
+                  <div className={`
+                    w-6 h-6 rounded-full flex items-center justify-center
+                    ${isActive ? 'bg-primary text-white' : 'border-2 border-gray-500'}
+                  `}>
+                    {isActive && '✓'}
+                  </div>
+                </div>
+                <div className="text-right text-sm text-gray-400 mt-1">
+                  +${extra.monto}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="text-right font-semibold text-lg">Monto bruto: ${monto}</div>

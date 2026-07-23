@@ -28,27 +28,36 @@ const Form = () => {
     <div className="p-4 max-w-full">
       <h2 className="text-2xl font-bold text-primary mb-4">📄 Información de Boleta</h2>
 
-      <div className="card space-y-6">
+      {/* Antes: space-y-6 entre secciones + space-y-2 con cada dato en su
+          propia línea = mucho scroll para poco contenido. Ahora space-y-4
+          entre secciones y los datos en grilla de 2 columnas (1 en móvil). */}
+      <div className="card space-y-4">
         {/* Sección 1: Datos de la boleta */}
         <div>
-          <h3 className="font-semibold text-lg text-white mb-3">Datos de la boleta de honorarios</h3>
-          <div className="space-y-2 text-gray-300">
+          <h3 className="font-semibold text-lg text-white mb-2">Datos de la boleta de honorarios</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-300">
             <p><span className="font-medium text-gray-400">Fecha:</span> {today}</p>
-            <p><span className="font-medium text-gray-400">A nombre de:</span> INVERSIONES ASINARA SPA</p>
             <p><span className="font-medium text-gray-400">RUT:</span> 76.456.187-2</p>
-            <p><span className="font-medium text-gray-400">Dirección:</span> AV. ANDRES BELLO 2777 Piso 19 Oficina 01, LAS CONDES</p>
-            <p><span className="font-medium text-gray-400">Giro:</span> OTRAS ACTIVIDADES CONEXAS AL TRANSPORTE</p>
-            <p><span className="font-medium text-gray-400">Enviar a:</span> finanzas@boosmap.com</p>
+            <p className="sm:col-span-2">
+              <span className="font-medium text-gray-400">A nombre de:</span> INVERSIONES ASINARA SPA
+            </p>
+            <p className="sm:col-span-2">
+              <span className="font-medium text-gray-400">Dirección:</span> AV. ANDRES BELLO 2777 Piso 19 Oficina 01, LAS CONDES
+            </p>
+            <p className="sm:col-span-2">
+              <span className="font-medium text-gray-400">Giro:</span> OTRAS ACTIVIDADES CONEXAS AL TRANSPORTE
+            </p>
+            <p className="sm:col-span-2">
+              <span className="font-medium text-gray-400">Enviar a:</span> finanzas@boosmap.com
+            </p>
           </div>
         </div>
 
-        <div className="border-t border-[#444] my-2"></div>
+        <div className="border-t border-[#444]"></div>
 
-        {/* Sección 2: Prestación y acciones */}
+        {/* Sección 2: Prestación y acciones.
+            Se quitaron el <h3> y <p> vacíos que solo ocupaban espacio. */}
         <div>
-          <h3 className="font-semibold text-lg text-white mb-3"></h3>
-          <p className="text-gray-300 mb-4"></p>
-
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => window.open('https://homer.sii.cl/', '_blank')}
@@ -74,11 +83,11 @@ const Form = () => {
           </p>
         </div>
 
-        <div className="border-t border-[#444] my-2"></div>
+        <div className="border-t border-[#444]"></div>
 
         {/* Sección 3: Formularios externos */}
         <div>
-          <h3 className="font-semibold text-lg text-white mb-3">Formularios de Registros Boosmap</h3>
+          <h3 className="font-semibold text-lg text-white mb-2">Formularios de Registros</h3>
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="https://boosmap.typeform.com/to/sFgws2bM"
