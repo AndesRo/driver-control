@@ -243,7 +243,7 @@ const LoginPage = () => {
       {/* Pie de página */}
       <footer className="mt-8 text-center text-gray-500 text-sm">
         <p>
-          Desarrollado por <span className="text-orange-400 font-medium">AndesRo</span> © {new Date().getFullYear()}
+          Desarrollado por <span className="text-orange-400 font-medium">AndrewRomn</span> © {new Date().getFullYear()}
         </p>
       </footer>
     </div>

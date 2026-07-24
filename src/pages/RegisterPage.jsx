@@ -195,7 +195,7 @@ const RegisterPage = () => {
         </div>
       </div>
       <footer className="mt-8 text-center text-gray-500 text-sm">
-        <p>Desarrollado por <span className="text-primary">AndrésRo</span> © {new Date().getFullYear()}</p>
+        <p>Desarrollado por <span className="text-primary">AndrewRomn</span> © {new Date().getFullYear()}</p>
       </footer>
     </div>
   );
